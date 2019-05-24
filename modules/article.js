@@ -30,9 +30,20 @@ class ArticleModel {
     /*更新文章*/
     static async updateArticle(data){
         return await Article.update({
-            author: data.author
+            title: data.title, //标题
+            author: data.author,  //作者
+            content: data.content,  //文章内容
+            category: data.category //文章分类
         },{
             where: { id: data.id }
+        })
+    }
+    /* 单个删除 */
+    static async deleteArticle(id){
+        return await Article.destroy({
+            where:{
+                id
+            }
         })
     }
 }

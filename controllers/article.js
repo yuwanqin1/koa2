@@ -76,30 +76,41 @@ class articleController {
     }
     static async update(ctx) {
         let req = ctx.request.body;
-        if(req.id){
+        let id = ctx.params.id
+        const ret = await ArticleModel.updateArticle(Object.assign(ctx.params, ctx.request.body));
             try{
-                //创建文章模型
-                const ret = await ArticleModel.updateArticle(req);
-                ctx.response.status = 200;
                 ctx.body = {
-                    code: 200,
-                    msg: '创建文章成功',
+                    code: ctx.response.status,
+                    msg: '修改文章成功',
                     data
                 }
             }catch(err){
-                ctx.response.status = 412;
                 ctx.body = {
-                    code: 412,
-                    msg: '创建文章失败',
-                    data: err
+                    code: ctx.response.status,
+                    msg: '修改文章失败',
+                    data: Object.assign(ctx.params, ctx.request.body),
+                    ret,
+                    req,
+                    ctx
                 }
             }
-        }else {
-            ctx.response.status = 416;
+    }
+    static async delete(ctx) {
+        let id = ctx.params.id
+        const ret = await ArticleModel.deleteArticle(id)
+        try{
             ctx.body = {
-                code: 200,
-                msg: '参数不齐全',
-                data: ctx
+                code: ctx.response.status,
+                msg: '删除文章成功',
+                data
+            }
+        }catch(err){
+            ctx.body = {
+                code: ctx.response.status,
+                msg: '删除文章失败',
+                data: ctx.params,
+                ret,
+                ctx
             }
         }
     }
