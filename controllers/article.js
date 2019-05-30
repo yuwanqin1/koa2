@@ -6,7 +6,6 @@ class articleController {
      * @param ctx
      * @returns {Promise.<void>}
      */
-    
     static async create(ctx){
         //接收客服端
         let req = ctx.request.body;
@@ -40,77 +39,85 @@ class articleController {
             }
         }
     }
-
     /**
      * 获取文章详情
      * @param ctx
      * @returns {Promise.<void>}
      */
     static async detail(ctx){
-        let id = ctx.params.id;
+        let id = ctx.params.id || ctx.request.body.id;
         if(id){
             try{
                 // 查询文章详情模型
                 let data = await ArticleModel.getArticle(id);
-                ctx.response.status = 200;
-                ctx.body = {
-                    code: 200,
-                    msg: '查询成功',
-                    data
+                if (data) {
+                    ctx.response.status = 200;
+                    ctx.body = {
+                        code: 200,
+                        msg: '查询成功',
+                        data
+                    }
+                } else {
+                    ctx.body = {
+                        msg: '不存在的id'
+                        }
                 }
             }catch(err){
                 ctx.response.status = 412;
                 ctx.body = {
                     code: 412,
                     msg: '查询失败',
-                    data
+                    data,
+                    err
                 }
             }
         }else {
             ctx.response.status = 416;
             ctx.body = {
                 code: 416,
-                msg: '文章ID必须传'
+                msg: '文章ID必须传',
+                ctx: ctx.request.body
             }
         }
     }
     static async update(ctx) {
         let req = ctx.request.body;
         let id = ctx.params.id
-        const ret = await ArticleModel.updateArticle(Object.assign(ctx.params, ctx.request.body));
             try{
-                ctx.body = {
-                    code: ctx.response.status,
-                    msg: '修改文章成功',
-                    data
+                const ret = await ArticleModel.updateArticle(Object.assign(ctx.params, ctx.request.body));
+                if(ret) {
+                    ctx.body = {
+                        code: 200,
+                        msg: '修改文章成功',
+                        data: ctx.params,
+                        response: ctx.response,
+                        ctx: ctx
+                    }
+                } else {
+                    ctx.body = {
+                        msg: '不存在的id'
+                    }
                 }
             }catch(err){
                 ctx.body = {
-                    code: ctx.response.status,
+                    code: 400,
                     msg: '修改文章失败',
-                    data: Object.assign(ctx.params, ctx.request.body),
-                    ret,
-                    req,
-                    ctx
+                    response: ctx.response
                 }
             }
     }
     static async delete(ctx) {
         let id = ctx.params.id
-        const ret = await ArticleModel.deleteArticle(id)
         try{
+            const ret = await ArticleModel.deleteArticle(id)
             ctx.body = {
-                code: ctx.response.status,
-                msg: '删除文章成功',
-                data
+                code: 200,
+                msg: '删除文章成功'
             }
         }catch(err){
             ctx.body = {
-                code: ctx.response.status,
-                msg: '删除文章失败',
-                data: ctx.params,
-                ret,
-                ctx
+                code: 400,
+                msg: '删除文章失败'
             }
         }
     }
