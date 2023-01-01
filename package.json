@@ -29,7 +29,7 @@
   },
   "devDependencies": {
     "nodemon": "^1.8.1",
-    "webpack": "^4.32.2"
+    "webpack": "^5.75.0"
   },
   "main": "app.js",
   "keywords": [],
